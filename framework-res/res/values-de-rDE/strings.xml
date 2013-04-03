@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="symbol_picker_A">ÄÀÁÂÆÃÅĄĀ</string>
+    <string name="symbol_picker_O">ÖØŒÕÒÓÔŌ</string>
+    <string name="symbol_picker_U">ÜÙÚÛŮŪ</string>
+    <string name="symbol_picker_a">äàáâæãåąā</string>
+    <string name="symbol_picker_o">öøœõòóôō</string>
+    <string name="symbol_picker_s">ß§śšş</string>
+    <string name="symbol_picker_u">üùúûůū</string>
+</resources>

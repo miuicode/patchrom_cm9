@@ -1,0 +1,53 @@
+本教程为此代码基于CM9的底包适配MIUI V4的教程：
+
+准备工作：
+1.下载MIUI V4代码，地址为:https://github.com/MiCode,同步教程请参照教程：https://github.com/miuicode/patchrom
+2.从CM官网上面下载您所持机型的CM刷机包
+3.下载此代码
+
+创建编译：
+1.将下载的此代码的文件夹重命名，重命名为你需要的设备的名字（此教程我们以sensation为例子）
+2.将下载的CM刷机包拷贝到sensation目录下面，将刷机包重命名为stockrom.zip
+3.准备编译环境
+  $ . build/envsetup.sh
+  $ cd sensation
+  $ make fullota
+4.等编译完成，在out目录下面的fullota.zip就是我们完成的刷机包，大家就可以刷到手机里面去了。
+
+注意：
+在这里我们还需要注意几个问题，这个可能会影响到大家的适配编译情况。
+1.CM底包的问题：我们在做这套代码的时候，用了CM官网上面下载的两个品牌机器的ROM进行了测试，测试结果是良好的，但我们不能保证所有的CM的ROM都能适用，尤其是非CM官方的，如果有人修改了框架文件，那么肯定就是不能编译通过的了。我们只能选择CM9（ics）的底包，不能使用jellybean的。
+
+2.开机问题：开机的时候卡在加载桌面的情况下，我们需要修改我们的内核，下面我们提供修改内核的几段简单的命令，这些命令都能在准备工作中提到的两个网址下面找到。
+在sensation目录下面，我们给定一个sensation的boot.img。
+$ ../tools/unpackbootimg -i boot.img
+$ mkdir ramdisk
+$cd ramdisk
+$ gzip -dc ../boot.img-ramdisk.gz |cpio -i
+我们用任何编辑器修改init.rc，在其中加入下面的一段代码，在任意位置插入，如果不明白的朋友，就直接在最后插入就可以。
+service shelld /system/xbin/shelld
+    class main
+然后我们将ramdisk重新打包。
+$ cd ..
+$ tools/mkbootfs ./ramdisk |gzip > ramdisk-new.gz
+最后，我们将内核重新打包。
+$ tools/mkbootimg --cmdline 'console=ttyDCC0 androidboot.hardware=xxx' --kernel
+boot.img-kernel --ramdisk ramdisk-new.gz --base 0x00200000 --pagesize 4096 -o boot-new.img
+--cmdline: 该选项为之前打印的 BOARD_KERNEL_CMDLINE
+--kernel:该选项为 Linux 内核文件
+--ramdisk:该选项为根文件系统压缩包
+--base:该选项为之前打印的 BOARD_KERNEL_BASE
+--pagesize:该选项为之前打印的 BOARD_PAGE_SIZE
+-o:该选项为输出文件名
+
+
+以上就是本代码基于CM9底包适配MIUI V4的教程和一些说明，此代码不能保证所有的CM9都能无错适配上，如果是CM9官方的框架，应该是没有问题的。我们拿从CM官网上面下载的sensation和lt18i来测试，是完全可以的。如果你的机器的CM9不能正常编译通过，我建议你可以从CM官网上面下载sensation的CM9，建立一个工程，然后将此代码和你建立的工程的代码进行对比，希望能对你的适配提供帮助。
+
+如果在适配过程中有什么问题，请去往http://www.micode.net论坛的PatchRom(V4)专区反馈问题。
+
+
+让我们向开源致敬！
+
+
+
+
